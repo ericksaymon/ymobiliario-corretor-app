@@ -145,6 +145,38 @@ Subtipos:
 - Comercial: Sala Comercial, Predio Comercial
 - Industrial: Galpao
 
+## Telas do aplicativo
+
+### Painel do Corretor
+Tela inicial com resumo da operação: imóveis cadastrados, visitas, tentativas de contato e imóveis ativos. Acesso rápido para cadastrar imóveis, ver lista e editar perfil.
+
+![Painel do Corretor](screenshots/01_painel_corretor.png)
+
+### Meus Imóveis
+Listagem dos imóveis do corretor com filtro por status, informações de cada anúncio (tipo, localização, valor) e botões de edição. Inclui botão "Novo imóvel" para cadastro rápido.
+
+![Meus Imóveis](screenshots/02_meus_imoveis.png)
+
+### Meu Perfil
+Visualização do perfil do corretor com CRECI, email e opções para editar perfil, alterar senha e sair da conta.
+
+![Meu Perfil](screenshots/03_meu_perfil.png)
+
+### Editar Perfil
+Formulário de edição com campos para foto, nome fantasia, telefone, descrição, Instagram e Facebook.
+
+![Editar Perfil](screenshots/04_editar_perfil.png)
+
+### Cadastrar Imóvel
+Formulário de cadastro de novo anúncio imobiliário com etapas para identidade do imóvel (tipo, subtipo, disponibilidade), descrição, localização e valores.
+
+![Cadastrar Imóvel](screenshots/05_cadastrar_imovel.png)
+
+### Cadastrar Imóvel - Etapa 2
+Seleção de comodidades (vista para o mar, depósito, lavanderia, pet friendly, etc.), upload de imagens do anúncio e finalização com revisão antes de enviar para aprovação.
+
+![Cadastrar Imóvel - Etapa 2](screenshots/06_cadastrar_imovel_etapa2.png)
+
 ## Status do projeto
 
 O app está funcional para o fluxo principal do corretor, com integração real ao backend. O empacotamento final em APK/App Bundle e automação de build ficam como próxima etapa do processo.
