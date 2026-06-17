@@ -625,11 +625,18 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(
                     color: AppColors.border.withValues(alpha: 0.8),
                   ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: AppColors.cardShadow,
+                      blurRadius: 18,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -638,6 +645,41 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
                       title: 'Finalização',
                       subtitle:
                           'Revise as informações antes de salvar o anúncio.',
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceElevated,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.auto_awesome_outlined,
+                              color: AppColors.primaryLight,
+                              size: 18,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Depois de salvar, o anúncio entra no fluxo de revisão antes de ir para a vitrine pública.',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppColors.muted,
+                                height: 1.45,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(

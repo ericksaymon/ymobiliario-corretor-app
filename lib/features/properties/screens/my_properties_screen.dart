@@ -69,24 +69,39 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: DropdownButtonFormField<String>(
-              initialValue: _selectedStatus,
-              decoration: const InputDecoration(
-                labelText: 'Filtrar por status',
-                prefixIcon: Icon(Icons.filter_list_outlined, size: 20),
-              ),
-              items: statuses
-                  .map(
-                    (status) => DropdownMenuItem(
-                      value: status,
-                      child: Text(status),
+            child: SurfacePanel(
+              radius: 20,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SectionHeader(
+                    title: 'Carteira de anúncios',
+                    subtitle:
+                        'Gerencie status, edições e próximas ações dos seus imóveis.',
+                  ),
+                  const SizedBox(height: 14),
+                  DropdownButtonFormField<String>(
+                    initialValue: _selectedStatus,
+                    decoration: const InputDecoration(
+                      labelText: 'Filtrar por status',
+                      prefixIcon: Icon(Icons.filter_list_outlined, size: 20),
                     ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                _selectedStatus = value ?? 'Todos';
-                _reload();
-              },
+                    items: statuses
+                        .map(
+                          (status) => DropdownMenuItem(
+                            value: status,
+                            child: Text(status),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      _selectedStatus = value ?? 'Todos';
+                      _reload();
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(
@@ -105,7 +120,19 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.home_work_outlined, size: 56, color: AppColors.muted.withValues(alpha: 0.4)),
+                        Container(
+                          padding: const EdgeInsets.all(18),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: Icon(
+                            Icons.home_work_outlined,
+                            size: 36,
+                            color: AppColors.muted.withValues(alpha: 0.7),
+                          ),
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           'Nenhum imóvel encontrado',
@@ -118,6 +145,12 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                         Text(
                           'Cadastre seu primeiro imóvel',
                           style: TextStyle(color: AppColors.muted, fontSize: 13),
+                        ),
+                        const SizedBox(height: 18),
+                        OutlinedButton.icon(
+                          onPressed: () => context.go('/properties/new'),
+                          icon: const Icon(Icons.add_home_outlined, size: 18),
+                          label: const Text('Criar anúncio'),
                         ),
                       ],
                     ),
@@ -170,7 +203,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: AppColors.surfaceElevated,
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(color: AppColors.border),
                                   ),

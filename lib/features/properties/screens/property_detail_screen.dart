@@ -53,6 +53,23 @@ class PropertyDetailScreen extends StatelessWidget {
                     height: 240,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => Container(
+                      height: 240,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFFFFF1E8), Color(0xFFFFE0CC)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.home_work_rounded,
+                          size: 48,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               const SizedBox(height: 20),

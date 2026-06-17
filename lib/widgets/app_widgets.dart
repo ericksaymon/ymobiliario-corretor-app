@@ -24,7 +24,7 @@ void showAppSnackBar(
           Expanded(child: Text(message)),
         ],
       ),
-      backgroundColor: error ? AppColors.danger : AppColors.text,
+      backgroundColor: error ? AppColors.danger : AppColors.surfaceElevated,
       behavior: SnackBarBehavior.floating,
       margin: const EdgeInsets.all(16),
     ),
@@ -51,11 +51,14 @@ class AuthLayout extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF4F6FA), Color(0xFFF4F6FA)],
+            colors: [
+              AppColors.background,
+              AppColors.backgroundAlt,
+            ],
           ),
         ),
         child: SafeArea(
@@ -74,7 +77,7 @@ class AuthLayout extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.surface,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: AppColors.border),
                           ),
@@ -93,7 +96,11 @@ class AuthLayout extends StatelessWidget {
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFFFF8B47), AppColors.primary],
+                          colors: [
+                            Color(0xFFFF8B47),
+                            AppColors.primary,
+                            Color(0xFFCB4D00),
+                          ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -137,7 +144,22 @@ class AuthLayout extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 28),
-                  child,
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface.withValues(alpha: 0.96),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: AppColors.border),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: AppColors.cardShadow,
+                          blurRadius: 24,
+                          offset: Offset(0, 12),
+                        ),
+                      ],
+                    ),
+                    child: child,
+                  ),
                 ],
               ),
             ),
@@ -176,7 +198,7 @@ class AppShell extends StatelessWidget {
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           border: Border(
             top: BorderSide(
               color: AppColors.border.withValues(alpha: 0.5),
@@ -199,9 +221,8 @@ class AppShell extends StatelessWidget {
                 break;
             }
           },
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.surface,
           surfaceTintColor: Colors.transparent,
-          height: 72,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           destinations: const [
             NavigationDestination(
@@ -245,7 +266,7 @@ class InfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
       ),
@@ -292,7 +313,7 @@ class PropertyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
       ),
@@ -314,23 +335,10 @@ class PropertyCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: property.thumbnail!,
                         fit: BoxFit.cover,
+                        errorWidget: (context, url, error) =>
+                            const _PropertyImageFallback(),
                       )
-                    : Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFFFFF1E8), Color(0xFFFFE0CC)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.home_work_rounded,
-                            size: 42,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ),
+                    : const _PropertyImageFallback(),
               ),
             ),
             Padding(
@@ -401,6 +409,30 @@ class PropertyCard extends StatelessWidget {
   }
 }
 
+class _PropertyImageFallback extends StatelessWidget {
+  const _PropertyImageFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF1A2437), Color(0xFF101827)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: const Center(
+        child: Icon(
+          Icons.home_work_rounded,
+          size: 42,
+          color: AppColors.primary,
+        ),
+      ),
+    );
+  }
+}
+
 class _StatusChip extends StatelessWidget {
   const _StatusChip({required this.label, required this.status});
 
@@ -431,6 +463,7 @@ class _StatusChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: _backgroundColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _backgroundColor.withValues(alpha: 0.18)),
       ),
       child: Text(
         label,
@@ -490,6 +523,39 @@ class SectionHeader extends StatelessWidget {
         if (action != null)
           TextButton(onPressed: onAction, child: Text(action!)),
       ],
+    );
+  }
+}
+
+class SurfacePanel extends StatelessWidget {
+  const SurfacePanel({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(18),
+    this.radius = 18,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.8)),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.cardShadow,
+            blurRadius: 20,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      child: child,
     );
   }
 }

@@ -14,7 +14,9 @@ class YmobiliarioCorretorApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Ymobiliario Corretor',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.darkTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.dark,
       routerConfig: router,
     );
   }

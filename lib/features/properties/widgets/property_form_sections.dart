@@ -21,7 +21,7 @@ class PropertyFormSectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppColors.border.withValues(alpha: 0.8)),
         boxShadow: const [
@@ -60,7 +60,7 @@ class PropertyFormHero extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFFFE4CC), Colors.white],
+          colors: [Color(0xFF1A2437), Color(0xFF0F172A), Color(0xFF101827)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -127,7 +127,7 @@ class PropertyFeatureToggle extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border.withValues(alpha: 0.9)),
       ),
@@ -177,6 +177,14 @@ class PropertyImagesPanel extends StatelessWidget {
                   : '${images.length} imagens selecionadas',
             ),
           ),
+          const SizedBox(height: 10),
+          Text(
+            'Priorize fotos horizontais e bem iluminadas para combinar com a vitrine do site.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.muted,
+              height: 1.4,
+            ),
+          ),
           if (images.isNotEmpty) ...[
             const SizedBox(height: 14),
             Wrap(
@@ -192,7 +200,7 @@ class PropertyImagesPanel extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: index == thumbnailIndex
                         ? AppColors.primary.withValues(alpha: 0.12)
-                        : const Color(0xFFF8FAFC),
+                        : AppColors.surfaceElevated,
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
                       color: index == thumbnailIndex

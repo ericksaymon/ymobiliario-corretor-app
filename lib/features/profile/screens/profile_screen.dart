@@ -24,7 +24,7 @@ class ProfileScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
             ),
@@ -35,7 +35,7 @@ class ProfileScreen extends ConsumerWidget {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundColor: const Color(0xFFFFF1E8),
+                      backgroundColor: AppColors.surfaceElevated,
                       backgroundImage: user?.fotoPerfil != null &&
                               user!.fotoPerfil!.isNotEmpty
                           ? CachedNetworkImageProvider(user.fotoPerfil!)
@@ -138,7 +138,7 @@ class _ProfileOption extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
         ),
