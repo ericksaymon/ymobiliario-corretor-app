@@ -3,8 +3,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/theme.dart';
 import '../../../models/app_models.dart';
 import '../../../services/property_api_service.dart';
+import '../widgets/property_form_sections.dart';
 import '../../../widgets/app_widgets.dart';
 
 class PropertyFormScreen extends StatefulWidget {
@@ -164,6 +166,8 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
       'exclusividade': _exclusividade,
       'rua': _ruaController.text.trim(),
       'numero': _numeroController.text.trim(),
+      'endereco':
+          '${_ruaController.text.trim()}, ${_numeroController.text.trim()} - ${_bairroController.text.trim()}',
       'bairro': _bairroController.text.trim(),
       'cidade': _cidadeController.text.trim(),
       'estado': _estadoController.text.trim(),
@@ -171,8 +175,9 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
       'areaTotal': double.tryParse(_areaTotalController.text.trim()) ?? 0,
       'preco': double.tryParse(_precoController.text.trim()),
       'valorAluguel': double.tryParse(_valorAluguelController.text.trim()),
-      'valorArrendamento':
-          double.tryParse(_valorArrendamentoController.text.trim()),
+      'valorArrendamento': double.tryParse(
+        _valorArrendamentoController.text.trim(),
+      ),
       'aptoFinanciamento': _aceitaFinanciamento,
       'aceitaVeiculo': _aceitaVeiculo,
       'aceitaPermuta': _aceitaPermuta,
@@ -193,10 +198,7 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
     }
 
     if (_tipo == 'Comercial') {
-      payload['comercial'] = {
-        'condicao': _condicao,
-        'mobiliado': _mobiliado,
-      };
+      payload['comercial'] = {'condicao': _condicao, 'mobiliado': _mobiliado};
     }
 
     if (_tipo == 'Industrial') {
@@ -267,18 +269,16 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
   @override
   Widget build(BuildContext context) {
     if (_bootstrapping) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final subtiposAtuais = _subtipos[_tipo] ?? const ['Casa'];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.propertyId == null
-            ? 'Cadastrar imóvel'
-            : 'Editar imóvel'),
+        title: Text(
+          widget.propertyId == null ? 'Cadastrar imóvel' : 'Editar imóvel',
+        ),
       ),
       body: SafeArea(
         child: Form(
@@ -286,301 +286,371 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              DropdownButtonFormField<String>(
-                initialValue: _tipo,
-                decoration: const InputDecoration(labelText: 'Tipo'),
-                items: _subtipos.keys
-                    .map(
-                      (tipo) => DropdownMenuItem(
-                        value: tipo,
-                        child: Text(tipo),
+              PropertyFormHero(
+                title: widget.propertyId == null
+                    ? 'Novo anúncio imobiliário'
+                    : 'Atualizar anúncio',
+                subtitle:
+                    'Preencha os dados por etapa para publicar um imóvel com informações completas e uma boa apresentação.',
+              ),
+              const SizedBox(height: 16),
+              PropertyFormSectionCard(
+                title: 'Identidade do imóvel',
+                subtitle:
+                    'Defina tipo, modelo de negócio e a descrição comercial.',
+                child: Column(
+                  children: [
+                    DropdownButtonFormField<String>(
+                      initialValue: _tipo,
+                      decoration: const InputDecoration(labelText: 'Tipo'),
+                      items: _subtipos.keys
+                          .map(
+                            (tipo) => DropdownMenuItem(
+                              value: tipo,
+                              child: Text(tipo),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        if (value == null) {
+                          return;
+                        }
+                        setState(() {
+                          _tipo = value;
+                          _subtipo =
+                              (_subtipos[_tipo]?.firstOrNull ?? _subtipo);
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      initialValue: subtiposAtuais.contains(_subtipo)
+                          ? _subtipo
+                          : subtiposAtuais.first,
+                      decoration: const InputDecoration(labelText: 'Subtipo'),
+                      items: subtiposAtuais
+                          .map(
+                            (subtipo) => DropdownMenuItem(
+                              value: subtipo,
+                              child: Text(subtipo),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) =>
+                          setState(() => _subtipo = value ?? _subtipo),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      initialValue: _disponibilidade,
+                      decoration: const InputDecoration(
+                        labelText: 'Disponibilidade',
                       ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value == null) {
-                    return;
-                  }
-                  setState(() {
-                    _tipo = value;
-                    _subtipo = (_subtipos[_tipo]?.firstOrNull ?? _subtipo);
-                  });
-                },
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: subtiposAtuais.contains(_subtipo)
-                    ? _subtipo
-                    : subtiposAtuais.first,
-                decoration: const InputDecoration(labelText: 'Subtipo'),
-                items: subtiposAtuais
-                    .map(
-                      (subtipo) => DropdownMenuItem(
-                        value: subtipo,
-                        child: Text(subtipo),
+                      items: const [
+                        DropdownMenuItem(value: 'Venda', child: Text('Venda')),
+                        DropdownMenuItem(
+                          value: 'Aluguel',
+                          child: Text('Aluguel'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Arrendamento',
+                          child: Text('Arrendamento'),
+                        ),
+                        DropdownMenuItem(value: 'Ambos', child: Text('Ambos')),
+                      ],
+                      onChanged: (value) => setState(
+                        () => _disponibilidade = value ?? _disponibilidade,
                       ),
-                    )
-                    .toList(),
-                onChanged: (value) => setState(() => _subtipo = value ?? _subtipo),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _disponibilidade,
-                decoration: const InputDecoration(labelText: 'Disponibilidade'),
-                items: const [
-                  DropdownMenuItem(value: 'Venda', child: Text('Venda')),
-                  DropdownMenuItem(value: 'Aluguel', child: Text('Aluguel')),
-                  DropdownMenuItem(
-                    value: 'Arrendamento',
-                    child: Text('Arrendamento'),
-                  ),
-                  DropdownMenuItem(value: 'Ambos', child: Text('Ambos')),
-                ],
-                onChanged: (value) =>
-                    setState(() => _disponibilidade = value ?? _disponibilidade),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _descricaoController,
-                maxLines: 5,
-                decoration: const InputDecoration(labelText: 'Descrição'),
-                validator: (value) => value == null || value.length < 20
-                    ? 'A descrição precisa ter pelo menos 20 caracteres'
-                    : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _ruaController,
-                decoration: const InputDecoration(labelText: 'Rua'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Informe a rua' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _numeroController,
-                decoration: const InputDecoration(labelText: 'Número'),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _bairros.contains(_bairroController.text)
-                    ? _bairroController.text
-                    : null,
-                decoration: const InputDecoration(labelText: 'Bairro'),
-                items: _bairros
-                    .map(
-                      (bairro) => DropdownMenuItem(
-                        value: bairro,
-                        child: Text(bairro),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) => _bairroController.text = value ?? '',
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Selecione o bairro' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _cidadeController,
-                decoration: const InputDecoration(labelText: 'Cidade'),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _estadoController,
-                decoration: const InputDecoration(labelText: 'Estado'),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _cepController,
-                decoration: const InputDecoration(labelText: 'CEP'),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _areaTotalController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Área total'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Informe a área total' : null,
-              ),
-              const SizedBox(height: 12),
-              if (_disponibilidade == 'Venda' ||
-                  _disponibilidade == 'Ambos') ...[
-                TextFormField(
-                  controller: _precoController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Preço de venda'),
-                ),
-                const SizedBox(height: 12),
-              ],
-              if (_disponibilidade == 'Aluguel' ||
-                  (_disponibilidade == 'Ambos' && _tipo != 'Rural')) ...[
-                TextFormField(
-                  controller: _valorAluguelController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Valor do aluguel'),
-                ),
-                const SizedBox(height: 12),
-              ],
-              if (_disponibilidade == 'Arrendamento' ||
-                  (_disponibilidade == 'Ambos' && _tipo == 'Rural')) ...[
-                TextFormField(
-                  controller: _valorArrendamentoController,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      const InputDecoration(labelText: 'Valor do arrendamento'),
-                ),
-                const SizedBox(height: 12),
-              ],
-              if (_tipo == 'Residencial' ||
-                  _tipo == 'Comercial' ||
-                  _tipo == 'Industrial') ...[
-                DropdownButtonFormField<String>(
-                  initialValue: _condicao,
-                  decoration: const InputDecoration(labelText: 'Condição'),
-                  items: const [
-                    DropdownMenuItem(value: 'Usado', child: Text('Usado')),
-                    DropdownMenuItem(value: 'Novo', child: Text('Novo')),
-                    DropdownMenuItem(
-                      value: 'Na planta',
-                      child: Text('Na planta'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _descricaoController,
+                      maxLines: 5,
+                      decoration: const InputDecoration(labelText: 'Descrição'),
+                      validator: (value) => value == null || value.length < 20
+                          ? 'A descrição precisa ter pelo menos 20 caracteres'
+                          : null,
                     ),
                   ],
-                  onChanged: (value) =>
-                      setState(() => _condicao = value ?? _condicao),
                 ),
-                const SizedBox(height: 12),
-              ],
-              if (_tipo == 'Residencial') ...[
-                TextFormField(
-                  controller: _quartosController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Quartos'),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _banheirosController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Banheiros'),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _suitesController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Suítes'),
-                ),
-                const SizedBox(height: 12),
-              ],
-              if (_tipo == 'Residencial' || _tipo == 'Industrial') ...[
-                TextFormField(
-                  controller: _areaConstruidaController,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      const InputDecoration(labelText: 'Área construída'),
-                ),
-                const SizedBox(height: 12),
-              ],
-              if (_tipo == 'Rural') ...[
-                TextFormField(
-                  controller: _loteController,
-                  decoration: const InputDecoration(labelText: 'Lote'),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _glebaController,
-                  decoration: const InputDecoration(labelText: 'Gleba'),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _projetoController,
-                  decoration:
-                      const InputDecoration(labelText: 'Projeto de assentamento'),
-                ),
-                const SizedBox(height: 12),
-              ],
-              SwitchListTile(
-                value: _mobiliado,
-                onChanged: (value) => setState(() => _mobiliado = value),
-                title: const Text('Mobiliado'),
-              ),
-              SwitchListTile(
-                value: _aceitaFinanciamento,
-                onChanged: (value) =>
-                    setState(() => _aceitaFinanciamento = value),
-                title: const Text('Aceita financiamento'),
-              ),
-              SwitchListTile(
-                value: _aceitaVeiculo,
-                onChanged: (value) => setState(() => _aceitaVeiculo = value),
-                title: const Text('Aceita veículo'),
-              ),
-              SwitchListTile(
-                value: _aceitaPermuta,
-                onChanged: (value) => setState(() => _aceitaPermuta = value),
-                title: const Text('Aceita permuta'),
               ),
               const SizedBox(height: 16),
-              Text(
-                'Diferenciais',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _diferenciaisDisponiveis.map((item) {
-                  final selected = _diferenciaisSelecionados.contains(item);
-                  return FilterChip(
-                    label: Text(item),
-                    selected: selected,
-                    onSelected: (value) {
-                      setState(() {
-                        if (value) {
-                          _diferenciaisSelecionados.add(item);
-                        } else {
-                          _diferenciaisSelecionados.remove(item);
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 16),
-              OutlinedButton.icon(
-                onPressed: _pickImages,
-                icon: const Icon(Icons.photo_library_outlined),
-                label: Text(
-                  _newImages.isEmpty
-                      ? 'Adicionar imagens'
-                      : '${_newImages.length} novas imagens',
-                ),
-              ),
-              if (_newImages.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                DropdownButtonFormField<int>(
-                  initialValue: _thumbnailIndex,
-                  decoration: const InputDecoration(labelText: 'Imagem de capa'),
-                  items: List.generate(
-                    _newImages.length,
-                    (index) => DropdownMenuItem(
-                      value: index,
-                      child: Text('Imagem ${index + 1}'),
+              PropertyFormSectionCard(
+                title: 'Localização e valores',
+                subtitle:
+                    'Informe endereço, bairro e dados financeiros do imóvel.',
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _ruaController,
+                      decoration: const InputDecoration(labelText: 'Rua'),
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Informe a rua'
+                          : null,
                     ),
-                  ),
-                  onChanged: (value) =>
-                      setState(() => _thumbnailIndex = value ?? 0),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _numeroController,
+                      decoration: const InputDecoration(labelText: 'Número'),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      initialValue: _bairros.contains(_bairroController.text)
+                          ? _bairroController.text
+                          : null,
+                      decoration: const InputDecoration(labelText: 'Bairro'),
+                      items: _bairros
+                          .map(
+                            (bairro) => DropdownMenuItem(
+                              value: bairro,
+                              child: Text(bairro),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) =>
+                          _bairroController.text = value ?? '',
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Selecione o bairro'
+                          : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _cidadeController,
+                      decoration: const InputDecoration(labelText: 'Cidade'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _estadoController,
+                      decoration: const InputDecoration(labelText: 'Estado'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _cepController,
+                      decoration: const InputDecoration(labelText: 'CEP'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _areaTotalController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Área total',
+                      ),
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Informe a área total'
+                          : null,
+                    ),
+                    const SizedBox(height: 12),
+                    if (_disponibilidade == 'Venda' ||
+                        _disponibilidade == 'Ambos') ...[
+                      TextFormField(
+                        controller: _precoController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Preço de venda',
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    if (_disponibilidade == 'Aluguel' ||
+                        (_disponibilidade == 'Ambos' && _tipo != 'Rural')) ...[
+                      TextFormField(
+                        controller: _valorAluguelController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Valor do aluguel',
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    if (_disponibilidade == 'Arrendamento' ||
+                        (_disponibilidade == 'Ambos' && _tipo == 'Rural')) ...[
+                      TextFormField(
+                        controller: _valorArrendamentoController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Valor do arrendamento',
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-              ],
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _loading ? null : _submit,
-                child: Text(
-                  _loading
-                      ? 'Salvando...'
-                      : widget.propertyId == null
-                          ? 'Cadastrar imóvel'
-                          : 'Salvar alterações',
+              ),
+              const SizedBox(height: 16),
+              PropertyFormSectionCard(
+                title: 'Características e operação',
+                subtitle:
+                    'Organize os atributos do imóvel para facilitar a busca e a negociação.',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_tipo == 'Residencial' ||
+                        _tipo == 'Comercial' ||
+                        _tipo == 'Industrial') ...[
+                      DropdownButtonFormField<String>(
+                        initialValue: _condicao,
+                        decoration: const InputDecoration(
+                          labelText: 'Condição',
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'Usado',
+                            child: Text('Usado'),
+                          ),
+                          DropdownMenuItem(value: 'Novo', child: Text('Novo')),
+                          DropdownMenuItem(
+                            value: 'Na planta',
+                            child: Text('Na planta'),
+                          ),
+                        ],
+                        onChanged: (value) =>
+                            setState(() => _condicao = value ?? _condicao),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    if (_tipo == 'Residencial') ...[
+                      TextFormField(
+                        controller: _quartosController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(labelText: 'Quartos'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _banheirosController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Banheiros',
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _suitesController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(labelText: 'Suítes'),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    if (_tipo == 'Residencial' || _tipo == 'Industrial') ...[
+                      TextFormField(
+                        controller: _areaConstruidaController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Área construída',
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    if (_tipo == 'Rural') ...[
+                      TextFormField(
+                        controller: _loteController,
+                        decoration: const InputDecoration(labelText: 'Lote'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _glebaController,
+                        decoration: const InputDecoration(labelText: 'Gleba'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _projetoController,
+                        decoration: const InputDecoration(
+                          labelText: 'Projeto de assentamento',
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    PropertyFeatureToggle(
+                      title: 'Mobiliado',
+                      value: _mobiliado,
+                      onChanged: (value) => setState(() => _mobiliado = value),
+                    ),
+                    PropertyFeatureToggle(
+                      title: 'Aceita financiamento',
+                      value: _aceitaFinanciamento,
+                      onChanged: (value) =>
+                          setState(() => _aceitaFinanciamento = value),
+                    ),
+                    PropertyFeatureToggle(
+                      title: 'Aceita veículo',
+                      value: _aceitaVeiculo,
+                      onChanged: (value) =>
+                          setState(() => _aceitaVeiculo = value),
+                    ),
+                    PropertyFeatureToggle(
+                      title: 'Aceita permuta',
+                      value: _aceitaPermuta,
+                      onChanged: (value) =>
+                          setState(() => _aceitaPermuta = value),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Diferenciais',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _diferenciaisDisponiveis.map((item) {
+                        final selected = _diferenciaisSelecionados.contains(
+                          item,
+                        );
+                        return FilterChip(
+                          label: Text(item),
+                          selected: selected,
+                          onSelected: (value) {
+                            setState(() {
+                              if (value) {
+                                _diferenciaisSelecionados.add(item);
+                              } else {
+                                _diferenciaisSelecionados.remove(item);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              PropertyImagesPanel(
+                images: _newImages,
+                thumbnailIndex: _thumbnailIndex,
+                onPickImages: _pickImages,
+                onThumbnailChanged: (value) =>
+                    setState(() => _thumbnailIndex = value ?? 0),
+              ),
+              const SizedBox(height: 18),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: AppColors.border.withValues(alpha: 0.8),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SectionHeader(
+                      title: 'Finalização',
+                      subtitle:
+                          'Revise as informações antes de salvar o anúncio.',
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _loading ? null : _submit,
+                      child: Text(
+                        _loading
+                            ? 'Salvando...'
+                            : widget.propertyId == null
+                            ? 'Cadastrar imóvel'
+                            : 'Salvar alterações',
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -6,7 +6,11 @@ import 'package:intl/intl.dart';
 import '../core/theme.dart';
 import '../models/app_models.dart';
 
-void showAppSnackBar(BuildContext context, String message, {bool error = false}) {
+void showAppSnackBar(
+  BuildContext context,
+  String message, {
+  bool error = false,
+}) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Row(
@@ -113,10 +117,11 @@ class AuthLayout extends StatelessWidget {
                   Center(
                     child: Text(
                       title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -0.5),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -124,10 +129,10 @@ class AuthLayout extends StatelessWidget {
                   Center(
                     child: Text(
                       subtitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: AppColors.muted, height: 1.5),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.muted,
+                        height: 1.5,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -172,7 +177,12 @@ class AppShell extends StatelessWidget {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border(top: BorderSide(color: AppColors.border.withValues(alpha: 0.5), width: 0.5)),
+          border: Border(
+            top: BorderSide(
+              color: AppColors.border.withValues(alpha: 0.5),
+              width: 0.5,
+            ),
+          ),
         ),
         child: NavigationBar(
           selectedIndex: currentIndex,
@@ -261,10 +271,10 @@ class InfoCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             title,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: AppColors.muted, fontWeight: FontWeight.w500),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.muted,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -273,11 +283,7 @@ class InfoCard extends StatelessWidget {
 }
 
 class PropertyCard extends StatelessWidget {
-  const PropertyCard({
-    super.key,
-    required this.property,
-    this.onTap,
-  });
+  const PropertyCard({super.key, required this.property, this.onTap});
 
   final PropertyModel property;
   final VoidCallback? onTap;
@@ -297,11 +303,14 @@ class PropertyCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(18),
+              ),
               child: SizedBox(
                 height: 180,
                 width: double.infinity,
-                child: property.thumbnail != null && property.thumbnail!.isNotEmpty
+                child:
+                    property.thumbnail != null && property.thumbnail!.isNotEmpty
                     ? CachedNetworkImage(
                         imageUrl: property.thumbnail!,
                         fit: BoxFit.cover,
@@ -315,8 +324,11 @@ class PropertyCard extends StatelessWidget {
                           ),
                         ),
                         child: const Center(
-                          child: Icon(Icons.home_work_rounded,
-                              size: 42, color: AppColors.primary),
+                          child: Icon(
+                            Icons.home_work_rounded,
+                            size: 42,
+                            color: AppColors.primary,
+                          ),
                         ),
                       ),
               ),
@@ -330,13 +342,21 @@ class PropertyCard extends StatelessWidget {
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      _StatusChip(label: property.status, status: property.status),
-                      _StatusChip(label: property.disponibilidade, status: property.disponibilidade),
+                      _StatusChip(
+                        label: property.status,
+                        status: property.status,
+                      ),
+                      _StatusChip(
+                        label: property.disponibilidade,
+                        status: property.disponibilidade,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    property.titulo.isNotEmpty ? property.titulo : property.subtipo,
+                    property.titulo.isNotEmpty
+                        ? property.titulo
+                        : property.subtipo,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.3,
@@ -347,14 +367,17 @@ class PropertyCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined, size: 14, color: AppColors.muted),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 14,
+                        color: AppColors.muted,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           '${property.bairro} - ${property.cidade}/${property.estado}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.muted,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.muted),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -422,28 +445,50 @@ class _StatusChip extends StatelessWidget {
 }
 
 class SectionHeader extends StatelessWidget {
-  const SectionHeader({super.key, required this.title, this.action, this.onAction});
+  const SectionHeader({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.action,
+    this.onAction,
+  });
 
   final String title;
+  final String? subtitle;
   final String? action;
   final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  subtitle!,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.muted,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
         if (action != null)
-          TextButton(
-            onPressed: onAction,
-            child: Text(action!),
-          ),
+          TextButton(onPressed: onAction, child: Text(action!)),
       ],
     );
   }

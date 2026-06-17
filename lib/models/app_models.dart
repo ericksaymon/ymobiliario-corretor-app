@@ -45,19 +45,19 @@ class AppUser {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'nome': nome,
-        'email': email,
-        'telefone': telefone,
-        'creci': creci,
-        'status': status,
-        'nomeFantasia': nomeFantasia,
-        'descricao': descricao,
-        'instagram': instagram,
-        'facebook': facebook,
-        'fotoPerfil': fotoPerfil,
-        'isAdmin': isAdmin,
-      };
+    'id': id,
+    'nome': nome,
+    'email': email,
+    'telefone': telefone,
+    'creci': creci,
+    'status': status,
+    'nomeFantasia': nomeFantasia,
+    'descricao': descricao,
+    'instagram': instagram,
+    'facebook': facebook,
+    'fotoPerfil': fotoPerfil,
+    'isAdmin': isAdmin,
+  };
 }
 
 class LoginResponseModel {
@@ -177,12 +177,15 @@ class PropertyModel {
 
     List<String> imagens = [];
     if (imagensJson is List) {
-      imagens = imagensJson.map((item) {
-        if (item is Map<String, dynamic>) {
-          return (item['url'] ?? '').toString();
-        }
-        return item.toString();
-      }).where((item) => item.isNotEmpty).toList();
+      imagens = imagensJson
+          .map((item) {
+            if (item is Map<String, dynamic>) {
+              return (item['url'] ?? '').toString();
+            }
+            return item.toString();
+          })
+          .where((item) => item.isNotEmpty)
+          .toList();
     }
 
     return PropertyModel(
@@ -212,10 +215,12 @@ class PropertyModel {
       quartos: _toInt(residencial?['quartos']),
       banheiros: _toInt(residencial?['banheiros']),
       suites: _toInt(residencial?['numero_suites']),
-      condicao: residencial?['condicao']?.toString() ??
+      condicao:
+          residencial?['condicao']?.toString() ??
           comercial?['condicao']?.toString() ??
           industrial?['condicao']?.toString(),
-      mobiliado: (residencial?['mobiliado'] ??
+      mobiliado:
+          (residencial?['mobiliado'] ??
               comercial?['mobiliado'] ??
               industrial?['mobiliado'] ??
               rural?['mobiliado']) ==
@@ -224,14 +229,40 @@ class PropertyModel {
       numero: json['numero']?.toString(),
       cep: json['cep']?.toString(),
       nomeFantasiaCorretor:
-          corretor?['nomeFantasia']?.toString() ?? corretor?['nome']?.toString(),
+          corretor?['nomeFantasia']?.toString() ??
+          corretor?['nome']?.toString(),
       telefoneCorretor: corretor?['telefone']?.toString(),
       fotoPerfilCorretor: corretor?['fotoPerfil']?.toString(),
       diferenciais: (json['diferenciais'] is List)
           ? (json['diferenciais'] as List)
-              .map((item) => item.toString())
-              .toList()
+                .map((item) => item.toString())
+                .toList()
           : const <String>[],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'titulo': titulo,
+    'tipo': tipo,
+    'subtipo': subtipo,
+    'disponibilidade': disponibilidade,
+    'status': status,
+    'bairro': bairro,
+    'cidade': cidade,
+    'estado': estado,
+    'descricao': descricao,
+    'preco': preco,
+    'valorAluguel': valorAluguel,
+    'valorArrendamento': valorArrendamento,
+    'thumbnail': thumbnail,
+    'imagens': imagens,
+    'visualizacoes': visualizacoes,
+    'totalTentativasContato': totalTentativasContato,
+    'areaTotal': areaTotal,
+    'rua': rua,
+    'numero': numero,
+    'cep': cep,
+    'diferenciais': diferenciais,
+  };
 }
