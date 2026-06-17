@@ -35,15 +35,33 @@ class AuthController extends ChangeNotifier {
   Future<void> initialize() async {
     try {
       await SessionManager.instance.load();
-      if (SessionManager.instance.accessToken != null &&
-          SessionManager.instance.refreshToken != null) {
-        currentUser = await _profileApiService.me();
-        await SessionManager.instance.updateUser(currentUser!);
+      final hasAccessToken = SessionManager.instance.accessToken != null;
+      final hasRefreshToken = SessionManager.instance.refreshToken != null;
+      final cachedUser = SessionManager.instance.user;
+
+      currentUser = cachedUser;
+      initialized = true;
+      notifyListeners();
+
+      if (hasAccessToken && hasRefreshToken) {
+        try {
+          final refreshedUser = await _profileApiService
+              .me()
+              .timeout(const Duration(seconds: 8));
+          currentUser = refreshedUser;
+          await SessionManager.instance.updateUser(refreshedUser);
+          notifyListeners();
+        } catch (_) {
+          if (cachedUser == null) {
+            await SessionManager.instance.clear();
+            currentUser = null;
+            notifyListeners();
+          }
+        }
       }
     } catch (_) {
       await SessionManager.instance.clear();
       currentUser = null;
-    } finally {
       initialized = true;
       notifyListeners();
     }
